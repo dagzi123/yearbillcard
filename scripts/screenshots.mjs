@@ -1,4 +1,3 @@
-import { spawn } from 'node:child_process';
 import { mkdirSync, existsSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { readFileSync, statSync } from 'node:fs';
@@ -24,11 +23,13 @@ function serveDist(port) {
   return new Promise((resolve) => {
     const server = createServer((req, res) => {
       let url = decodeURIComponent(req.url || '/').split('?')[0];
+      // Support GitHub Pages base `/yearbillcard/`
+      if (url.startsWith('/yearbillcard')) url = url.slice('/yearbillcard'.length) || '/';
       if (url === '/') url = '/index.html';
       const path = join(dist, url.replace(/^\//, ''));
       if (!path.startsWith(dist) || !existsSync(path) || statSync(path).isDirectory()) {
         res.writeHead(404);
-        res.end('not found');
+        res.end('not found: ' + url);
         return;
       }
       res.writeHead(200, { 'Content-Type': mime[extname(path)] || 'application/octet-stream' });
@@ -41,17 +42,14 @@ function serveDist(port) {
 const port = 4177;
 const server = await serveDist(port);
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1280, height: 1600 } });
-await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'networkidle' });
+const page = await browser.newPage({ viewport: { width: 1280, height: 1800 } });
+await page.goto(`http://127.0.0.1:${port}/yearbillcard/`, { waitUntil: 'networkidle' });
 await page.click('#demo');
-await page.waitForTimeout(1500);
+await page.waitForTimeout(2000);
 await page.waitForFunction(() => window.__yearbill?.getStats?.());
 await page.screenshot({ path: join(docs, 'main-page.png'), fullPage: true });
 
-for (const skin of ['midnight', 'peach', 'mint']) {
-  await page.evaluate((s) => window.__yearbill.setSkin(s), skin);
-  await page.waitForTimeout(300);
-  // unscale for clean poster shot
+async function shotPoster(name) {
   await page.evaluate(() => {
     const el = document.querySelector('.poster');
     if (el) {
@@ -60,12 +58,24 @@ for (const skin of ['midnight', 'peach', 'mint']) {
     }
   });
   const poster = page.locator('.poster');
-  await poster.screenshot({ path: join(docs, `poster-${skin}.png`) });
+  await poster.screenshot({ path: join(docs, name) });
   await page.evaluate(() => {
     const el = document.querySelector('.poster');
     if (el) el.classList.add('scaled');
   });
 }
+
+for (const skin of ['midnight', 'peach', 'mint']) {
+  await page.evaluate((s) => window.__yearbill.setSkin(s), skin);
+  await page.waitForTimeout(400);
+  await shotPoster(`poster-${skin}.png`);
+}
+
+await page.evaluate(() => window.__yearbill.setPrivacy(true));
+await page.waitForTimeout(800);
+await page.evaluate(() => window.__yearbill.setSkin('midnight'));
+await page.waitForTimeout(400);
+await shotPoster('poster-privacy.png');
 
 await browser.close();
 server.close();

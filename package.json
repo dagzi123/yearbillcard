@@ -17,12 +17,11 @@
     "playwright": "^1.65.0",
     "typescript": "~7.0.2",
     "vite": "^8.3.6",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "iconv-lite": "^0.7.3"
   },
   "dependencies": {
-    "buffer": "^6.0.3",
     "html-to-image": "^1.11.13",
-    "iconv-lite": "^0.7.3",
     "xlsx": "^0.18.5"
   },
   "description": "Local WeChat/Alipay annual spending poster — privacy-first"

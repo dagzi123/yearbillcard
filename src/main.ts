@@ -1,5 +1,3 @@
-import { Buffer } from 'buffer';
-(window as any).Buffer = Buffer;
 import './style.css';
 import { toPng } from 'html-to-image';
 import { filterYear, mergeTxns, parseBillFile } from './parse/detect';
@@ -41,7 +39,7 @@ function render() {
             <option value="mint" ${skin === 'mint' ? 'selected' : ''}>薄荷账单</option>
           </select>
         </label>
-        <label><input id="privacy" type="checkbox" ${privacy ? 'checked' : ''}/> 隐私模式（隐藏金额）</label>
+        <label><input id="privacy" type="checkbox" ${privacy ? 'checked' : ''}/> 隐私模式（金额→***/占比）</label>
         <button type="button" class="secondary" id="clear">清空</button>
       </div>
       <div class="file-list">${filesLoaded.length ? '已加载：' + filesLoaded.join('、') : '尚未加载文件'}</div>
@@ -114,19 +112,22 @@ function renderStats(s: YearStats): string {
     <div class="stats-grid">
       <div class="stat"><small>生活支出</small><strong>${formatMoney(s.expenseTotal, privacy)}</strong></div>
       <div class="stat"><small>收入</small><strong>${formatMoney(s.incomeTotal, privacy)}</strong></div>
-      <div class="stat"><small>人格</small><strong style="font-size:1rem">${s.persona}</strong></div>
+      <div class="stat persona-stat"><small>人格标签</small><strong>${s.persona}</strong></div>
     </div>
     <p style="margin:12px 0;color:#475569">${s.personaDetail}</p>
+    <p style="margin:0 0 12px;color:#64748b;font-size:.95rem">${s.wittyLine}</p>
     <h3>分类</h3>
     <ul>${s.byCategory
       .slice(0, 8)
-      .map((c) => `<li>${c.cat} · ${formatMoney(c.amount, privacy)}（${c.count}笔）</li>`)
+      .map((c) => `<li>${c.cat} · ${formatMoney(c.amount, privacy)}${privacy ? '' : ''}（${c.count}笔 · ${c.pct}%）</li>`)
       .join('')}</ul>
     <h3>商户 TOP</h3>
     <ul>${s.topMerchants
       .slice(0, 5)
-      .map((m) => `<li>${m.name} · ${formatMoney(m.amount, privacy)}</li>`)
+      .map((m) => `<li title="${m.name}">${m.name.length > 18 ? m.name.slice(0, 17) + '…' : m.name} · ${privacy ? m.pct + '%' : formatMoney(m.amount, false)}</li>`)
       .join('')}</ul>
+    <h3>趣味数字</h3>
+    <ul>${s.funLines.map((l) => `<li>${l}</li>`).join('')}</ul>
   `;
 }
 
@@ -144,7 +145,9 @@ function paintPoster() {
 function recompute() {
   const filtered = filterYear(txns, year);
   stats = filtered.length ? computeStats(txns, year) : null;
-  if (!filtered.length && txns.length) warnings = [...warnings.filter((w) => !w.includes('年份')), `所选年份 ${year} 无交易，请换年份`];
+  if (!filtered.length && txns.length) {
+    warnings = [...warnings.filter((w) => !w.includes('年份')), `所选年份 ${year} 无交易，请换年份`];
+  }
   render();
 }
 
@@ -159,7 +162,6 @@ async function ingest(fileList: FileList | File[]) {
     filesLoaded.push(`${f.name}(${r.source}/${r.txns.length})`);
   }
   txns = mergeTxns([...txns, ...newTxns]);
-  // auto year: max year in data
   if (txns.length) {
     const years = txns.map((t) => t.time.getFullYear());
     year = Math.max(...years);
@@ -197,7 +199,7 @@ async function downloadPoster() {
     });
     const a = document.createElement('a');
     a.href = dataUrl;
-    a.download = `yearbillcard-${stats.year}-${skin}.png`;
+    a.download = `yearbillcard-${stats.year}-${skin}${privacy ? '-privacy' : ''}.png`;
     a.click();
   } finally {
     el.className = prev;
@@ -206,7 +208,6 @@ async function downloadPoster() {
 
 render();
 
-// Expose for playwright screenshots
 (window as unknown as { __yearbill?: unknown }).__yearbill = {
   loadDemo,
   getStats: () => stats,

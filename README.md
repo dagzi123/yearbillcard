@@ -10,6 +10,10 @@
 |----------|----------|----------|
 | ![](docs/poster-midnight.png) | ![](docs/poster-peach.png) | ![](docs/poster-mint.png) |
 
+隐私模式（金额打码 / 占比）：
+
+![隐私模式海报](docs/poster-privacy.png)
+
 ## 隐私声明
 
 - 纯静态前端（Vite），**无后端、无账号、无上传**。
@@ -28,10 +32,14 @@ npm run dev
 或拖入你自己导出的微信 csv/xlsx、支付宝 csv。
 
 ```bash
-npm run build      # 产出 dist/，可丢到 GitHub Pages
-npm test           # 解析器单测
-npm run screenshots # 重建 docs/ 截图
+npm run build       # 产出 dist/，可部署到 GitHub Pages（base=/yearbillcard/）
+npm test            # 解析器单测
+npm run screenshots # 重建 docs/ 截图（含隐私模式）
 ```
+
+在线预览（发布后）：`https://<user>.github.io/yearbillcard/`
+
+仓库：https://github.com/dagzi1231/yearbillcard
 
 ## 如何导出账单
 
@@ -50,7 +58,7 @@ npm run screenshots # 重建 docs/ 截图
 1. 支付宝 → **我的** → **账单**
 2. 右上角 **…** → **开具交易流水证明 / 下载账单**（文案随版本略有差异）
 3. 选时间范围 → **CSV / 电子版** → 邮箱接收并解压
-4. 文件多为 **GBK** 编码；本工具会自动尝试识别
+4. 文件多为 **GBK** 编码；本工具用浏览器 `TextDecoder` 自动尝试识别（无需 Node polyfill）
 
 常见表头字段：`交易时间,交易分类,交易对方,对方账号,商品说明,收/支,金额,收/付款方式,交易状态,交易订单号,商家订单号,备注`
 
@@ -61,14 +69,15 @@ npm run screenshots # 重建 docs/ 截图
 - 拖拽多文件；自动识别微信 / 支付宝；合并去重（优先交易单号）
 - 按自然年筛选；排除全额退款 / 关闭单；转账红包默认不计入「生活支出」人格
 - 规则分类：外卖 / 奶茶咖啡 / 交通 / 房租 / 购物 / 游戏娱乐…
-- 统计：总支出与收入、分类 TOP、商户 TOP、最大一笔、月度曲线、深夜消费、奶茶杯数
+- 统计：总支出与收入、分类 TOP、商户 TOP、最大一笔、月度曲线（带标签）、深夜消费、最忙一天、趣味对比文案
 - 规则生成毒舌人格标签（无需 LLM）
-- 3:4（1080×1440）海报，三套皮肤；**隐私模式**可打码金额
-- 演示数据一键试用
+- 3:4（1080×1440）海报，三套皮肤；**隐私模式**可用 `***` / 百分比替代金额
+- 演示数据一键试用（全年约 300–600 笔 SYNTHETIC）
+- `xlsx` 动态按需加载，缩小首包
 
 ## 与「完整记账 App」的区别
 
-BeeCount（约 2.7k★）、ezBookkeeping（约 6k★）等是长期账本。YearBillCard 只做 **一张能发的年报卡**。竞品深挖见 [`/workspace/oss-coldstart/competitors_yearbillcard.md`](../oss-coldstart/competitors_yearbillcard.md)（若你在 monorepo 外克隆，可忽略该相对路径）。
+BeeCount、ezBookkeeping 等是长期账本。YearBillCard 只做 **一张能发的年报卡**。
 
 ## 限制（请先读）
 
@@ -76,7 +85,6 @@ BeeCount（约 2.7k★）、ezBookkeeping（约 6k★）等是长期账本。Yea
 - 支付宝旧版网页导出列名可能不同（已做部分别名）；**证明材料 PDF 不支持**。
 - 分类靠关键词，长尾商户会进「其他」。
 - 微信↔支付宝互转、银行卡流水重复记账，本 MVP 不做跨机构资金链去重。
-- 打包体积含 `xlsx` + `iconv-lite`，偏大；后续可按需拆分。
 
 ## License
 

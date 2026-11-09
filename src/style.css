@@ -6,7 +6,7 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; }
-.app { max-width: 1100px; margin: 0 auto; padding: 24px 16px 80px; }
+.app { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
 header.hero-head h1 { font-size: 1.8rem; margin: 0 0 8px; }
 header.hero-head p { margin: 0; color: #475569; }
 .privacy-banner {
@@ -35,57 +35,135 @@ select, input[type="number"] {
   border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 10px;
 }
 .file-list { font-size: .9rem; color: #334155; margin-top: 8px; }
-.layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+.layout { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 16px; }
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+/* Sidebar stats — persona must not squeeze into a thin column */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 .stat {
   background: #f8fafc; border-radius: 12px; padding: 12px;
+  min-width: 0;
 }
-.stat small { color: #64748b; display: block; }
-.stat strong { font-size: 1.25rem; }
+.stat.persona-stat {
+  grid-column: 1 / -1;
+}
+.stat small { color: #64748b; display: block; margin-bottom: 4px; }
+.stat strong {
+  font-size: 1.25rem;
+  display: block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+  writing-mode: horizontal-tb;
+}
+.stat.persona-stat strong {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
 .warnings { color: #b45309; font-size: .9rem; }
 .poster-wrap {
   width: 100%; overflow: auto; display: flex; justify-content: center;
   background: #e2e8f0; border-radius: 16px; padding: 16px;
 }
+
+/* ===== Poster 1080×1440 ===== */
 .poster {
   width: 1080px; height: 1440px; flex-shrink: 0;
-  border-radius: 28px; padding: 56px 52px; position: relative;
+  border-radius: 28px; padding: 40px 44px 28px;
+  position: relative;
   transform-origin: top center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
 }
 .poster .badge {
   display: inline-block; padding: 8px 14px; border-radius: 999px;
-  background: rgba(255,255,255,.18); font-size: 22px; margin-bottom: 18px;
+  background: var(--soft, rgba(255,255,255,.18)); font-size: 20px; margin-bottom: 10px;
+  font-weight: 600;
 }
-.poster h1 { font-size: 72px; margin: 0 0 12px; letter-spacing: .02em; }
-.poster .persona { font-size: 36px; font-weight: 800; margin: 0 0 8px; }
-.poster .detail { font-size: 24px; opacity: .9; margin: 0 0 28px; }
-.poster .hero {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-  border-radius: 22px; padding: 22px; margin-bottom: 28px;
+.poster h1 { font-size: 56px; margin: 0 0 4px; letter-spacing: .02em; line-height: 1.1; }
+.poster .persona {
+  font-size: 28px; font-weight: 800; margin: 0 0 6px;
+  overflow-wrap: anywhere; word-break: break-word;
 }
-.poster .hero strong { display: block; font-size: 34px; margin-top: 6px; }
-.poster .hero small { font-size: 20px; }
-.poster h2 { font-size: 28px; margin: 18px 0 12px; }
-.poster .bar-row {
-  display: grid; grid-template-columns: 120px 1fr 160px; gap: 12px;
-  align-items: center; font-size: 22px; margin: 8px 0;
+.poster .detail { font-size: 20px; opacity: .9; margin: 0; line-height: 1.3; }
+.poster .hero-nums {
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px;
+  border-radius: 20px; padding: 16px 18px; margin-top: 2px;
 }
-.poster .bar { height: 16px; background: rgba(255,255,255,.25); border-radius: 999px; overflow: hidden; }
-.poster .bar i { display: block; height: 100%; background: currentColor; opacity: .85; border-radius: 999px; background: var(--accent, #a5b4fc); }
-.poster .months { display: flex; align-items: flex-end; gap: 10px; height: 90px; margin-top: 8px; }
-.poster .m { flex: 1; text-align: center; }
-.poster .mc { background: var(--accent, #a5b4fc); border-radius: 8px 8px 4px 4px; width: 100%; }
-.poster .m em { display: block; font-style: normal; font-size: 16px; margin-top: 6px; opacity: .8; }
-.poster .fun {
-  margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  font-size: 22px;
+.poster .hero-cell small { font-size: 20px; display: block; }
+.poster .hero-cell strong { display: block; font-size: 38px; margin-top: 2px; letter-spacing: .01em; }
+.poster .hero-cell strong.sm { font-size: 34px; }
+.poster .hero-cell em { display: block; font-style: normal; font-size: 18px; opacity: .75; margin-top: 4px; }
+.poster .block { margin: 0; }
+.poster .block h2 {
+  font-size: 22px; margin: 0 0 8px; opacity: .95; font-weight: 800;
+  letter-spacing: .04em;
 }
-.poster .fun > div {
-  background: rgba(255,255,255,.16); border-radius: 16px; padding: 14px 16px;
+.poster .fun-list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;
+  font-size: 20px;
 }
-.poster footer {
-  position: absolute; left: 52px; right: 52px; bottom: 40px;
-  font-size: 20px; opacity: .75;
+.poster .fun-list li {
+  background: var(--soft, rgba(255,255,255,.16));
+  border-radius: 12px; padding: 10px 12px;
+  overflow-wrap: anywhere;
 }
-.scaled { transform: scale(0.42); margin-bottom: -780px; }
+.poster .grid2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.poster .cardish { border-radius: 16px; padding: 12px 14px; }
+.poster .mers { display: flex; flex-direction: column; gap: 10px; }
+.poster .mer {
+  display: grid; grid-template-columns: 36px 1fr auto; gap: 8px; align-items: center;
+  font-size: 20px;
+}
+.poster .rank { font-weight: 800; opacity: .7; }
+.poster .mname {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+.poster .mamt { font-weight: 700; white-space: nowrap; }
+.poster .hl { display: flex; flex-direction: column; gap: 8px; font-size: 18px; }
+.poster .hl .k { display: block; font-size: 16px; margin-bottom: 2px; }
+.poster .hl .v { display: block; font-weight: 700; overflow-wrap: anywhere; word-break: break-word; }
+.poster .cats { display: flex; flex-direction: column; gap: 8px; }
+.poster .cat-row {
+  display: grid; grid-template-columns: 100px 1fr 130px; gap: 10px; align-items: center;
+  font-size: 20px;
+}
+.poster .cname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.poster .cbar {
+  height: 14px; background: rgba(127,127,127,.22); border-radius: 999px; overflow: hidden;
+}
+.poster .cbar i { display: block; height: 100%; border-radius: 999px; }
+.poster .camt { text-align: right; font-weight: 700; white-space: nowrap; }
+.poster .months {
+  display: flex; align-items: flex-end; gap: 8px; height: 110px; padding-top: 4px;
+}
+.poster .mbar {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  min-width: 0; height: 100%;
+}
+.poster .mfill { width: 100%; border-radius: 8px 8px 4px 4px; }
+.poster .mlab { font-size: 14px; margin-top: 6px; opacity: .8; }
+.poster .mval { font-size: 13px; opacity: .7; line-height: 1.2; white-space: nowrap; }
+.poster .witty {
+  margin: 2px 0 0; text-align: center; font-size: 24px; font-weight: 700;
+  letter-spacing: .02em; opacity: .95; flex-shrink: 0;
+}
+.poster .pf {
+  margin-top: auto;
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: 17px; opacity: .78; padding-top: 8px;
+  border-top: 1px solid rgba(127,127,127,.25); flex-shrink: 0;
+}
+.poster .pf span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.poster .empty { opacity: .6; }
+
+.scaled { transform: scale(0.38); margin-bottom: -860px; }

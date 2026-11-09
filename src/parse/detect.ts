@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import { parseAlipayCsv } from './alipay';
 import { bytesToText } from './decode';
 import type { ParseResult, Txn } from './types';
@@ -20,6 +19,7 @@ export async function parseBillFile(file: File): Promise<ParseResult> {
   const buf = await file.arrayBuffer();
 
   if (/\.xlsx?$/i.test(name)) {
+    const XLSX = await import('xlsx');
     const wb = XLSX.read(buf, { type: 'array' });
     const sheet = wb.Sheets[wb.SheetNames[0]];
     const csv = XLSX.utils.sheet_to_csv(sheet);
@@ -65,7 +65,7 @@ export function filterYear(txns: Txn[], year: number): Txn[] {
 
 export function isRefundedExpense(t: Txn): boolean {
   if (t.direction !== 'expense') return false;
-  return /全额退款|已退款|对方已退还|已退还/.test(t.status);
+  return /全额退款|已退款|对方已退还|已退还|退款成功/.test(t.status);
 }
 
 export function isClosed(t: Txn): boolean {
