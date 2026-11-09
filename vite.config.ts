@@ -1,0 +1,16 @@
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  base: './',
+  define: {
+    global: 'globalThis',
+  },
+  optimizeDeps: {
+    include: ['iconv-lite', 'buffer'],
+  },
+  server: { port: 5173 },
+  test: {
+    environment: 'node',
+    include: ['tests/**/*.test.ts'],
+  },
+});
