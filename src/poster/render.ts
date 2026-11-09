@@ -147,7 +147,7 @@ export function renderPosterHtml(stats: YearStats, skin: Skin, privacy: boolean)
 
     <footer class="pf">
       <span>YearBillCard · 本地解析，不上传</span>
-      <span>github.com/dagzi1231/yearbillcard</span>
+      <span>github.com/dagzi123/yearbillcard</span>
     </footer>
   </div>`;
 }

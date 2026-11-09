@@ -39,7 +39,7 @@ npm run screenshots # 重建 docs/ 截图（含隐私模式）
 
 在线预览（发布后）：`https://<user>.github.io/yearbillcard/`
 
-仓库：https://github.com/dagzi1231/yearbillcard
+仓库：https://github.com/dagzi123/yearbillcard
 
 ## 如何导出账单
 
